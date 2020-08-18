@@ -64,12 +64,12 @@ class PdfDocument {
   }
 
   /// Opening the specified file.
-  static Future<PdfDocument> openFile(String filePath) async {
-    return _open(await _channel.invokeMethod('file', filePath), filePath);
+  static Future<PdfDocument> openFile(String filePath, { String password }) async {
+    return _open(await _channel.invokeMethod('file', { 'filePath':filePath, 'password':password }), filePath);
   }
 
   /// Opening the specified asset.
-  static Future<PdfDocument> openAsset(String name) async {
+  static Future<PdfDocument> openAsset(String name ) async {
     return _open(await _channel.invokeMethod('asset', name), 'asset:$name');
   }
 

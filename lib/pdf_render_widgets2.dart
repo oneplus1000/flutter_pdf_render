@@ -61,6 +61,7 @@ class PdfDocumentLoader extends StatefulWidget {
   final String filePath;
   final String assetName;
   final Uint8List data;
+  final String password;
   //final String password;
   /// Function to build widget tree corresponding to PDF document.
   final PdfDocumentBuilder documentBuilder;
@@ -87,6 +88,7 @@ class PdfDocumentLoader extends StatefulWidget {
     this.pageNumber,
     this.pageBuilder,
     this.onError,
+    this.password,
   }) : super(key: key);
 
   @override
@@ -147,7 +149,7 @@ class _PdfDocumentLoaderState extends State<PdfDocumentLoader> {
   Future<void> _init() async {
     try {
       if (widget.filePath != null) {
-        _doc = await PdfDocument.openFile(widget.filePath);
+        _doc = await PdfDocument.openFile(widget.filePath,password: widget.password);
       } else if (widget.assetName != null) {
         _doc = await PdfDocument.openAsset(widget.assetName);
       } else if (widget.data != null) {
@@ -444,6 +446,7 @@ class PdfViewer extends StatefulWidget {
   final String assetName;
   final Uint8List data;
   final PdfDocument doc;
+  final String password;
   /// Page number to show on the first time.
   final int pageNumber;
   /// Padding for the every page.
@@ -502,7 +505,8 @@ class PdfViewer extends StatefulWidget {
     this.panEnabled = true,
     this.scaleEnabled = true,
     this.viewerController,
-    this.onViewerControllerInitialized
+    this.onViewerControllerInitialized,
+    this.password,
   }): super(key: key);
 
   @override
@@ -578,7 +582,7 @@ class _PdfViewerState extends State<PdfViewer> with SingleTickerProviderStateMix
   Future<void> load() async {
     _releasePages();
     if (widget.filePath != null) {
-      _doc = await PdfDocument.openFile(widget.filePath);
+      _doc = await PdfDocument.openFile(widget.filePath, password: widget.password);
     } else if (widget.assetName != null) {
       _doc = await PdfDocument.openAsset(widget.assetName);
     } else if (widget.data != null) {

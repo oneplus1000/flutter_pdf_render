@@ -49,11 +49,25 @@ public class SwiftPdfRenderPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     if call.method == "file"
     {
+      /*
       guard let pdfFilePath = call.arguments as! String? else {
         result(nil)
         return
+      }*/
+      guard let args = call.arguments as? Dictionary<String, Any> else {
+        result(nil)
+        return
       }
-      result(registerNewDoc(openFileDoc(pdfFilePath: pdfFilePath)))
+       
+      guard let pdfFilePath = args["filePath"] as! String? else {
+        result(nil)
+        return
+      }
+      guard let pdfPassword = args["password"] as! String? else {
+        result(nil)
+        return
+      }
+      result(registerNewDoc(openFileDoc(pdfFilePath: pdfFilePath , pdfPassword: pdfPassword )))
     }
     else if call.method == "asset"
     {
@@ -187,11 +201,18 @@ public class SwiftPdfRenderPlugin: NSObject, FlutterPlugin {
     guard let path = Bundle.main.path(forResource: key, ofType: "") else {
       return nil
     }
-    return openFileDoc(pdfFilePath: path)
+    return openFileDoc(pdfFilePath: path , pdfPassword: nil)
   }
 
-  func openFileDoc(pdfFilePath: String) -> CGPDFDocument? {
-    return CGPDFDocument(URL(fileURLWithPath: pdfFilePath) as CFURL)
+  func openFileDoc(pdfFilePath: String, pdfPassword: String?) -> CGPDFDocument? {
+    let doc = CGPDFDocument(URL(fileURLWithPath: pdfFilePath) as CFURL)
+    if pdfPassword != nil {
+        let isOk = doc?.unlockWithPassword(pdfPassword!)
+        if isOk == nil || isOk! == false {
+            return nil
+        }
+    }
+    return doc
   }
 
   func openPage(args: NSDictionary) -> NSDictionary? {
